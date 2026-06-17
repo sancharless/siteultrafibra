@@ -505,50 +505,83 @@ img {
     display: flex;
     justify-content: center;
     align-items: center;
+    width: 100%;
 }
 
-.floating-mascot-glow {
-    position: absolute;
-    width: 380px;
-    height: 380px;
-    background: radial-gradient(circle, rgba(255, 106, 0, 0.2) 0%, rgba(255, 0, 127, 0.1) 50%, rgba(0,0,0,0) 70%);
-    border-radius: 50%;
-    z-index: 1;
-    filter: blur(15px);
-    animation: mascotGlow 6s ease-in-out infinite alternate;
-}
-
-.hero-mascot-img {
+.hero-image-wrapper {
     position: relative;
+    width: 100%;
+    max-width: 440px;
+    border-radius: 24px;
+    overflow: hidden;
+    border: 1.5px solid rgba(255, 106, 0, 0.25);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
     z-index: 2;
-    max-height: 520px;
-    animation: floatMascot 4.5s ease-in-out infinite alternate;
+    aspect-ratio: 1 / 1;
 }
 
-.wave-overlay {
+.hero-image-overlay {
     position: absolute;
-    bottom: -10px;
-    left: -10px;
-    right: -10px;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(135deg, rgba(6, 15, 30, 0.5) 0%, rgba(6, 15, 30, 0.1) 60%, rgba(6, 15, 30, 0.6) 100%);
     z-index: 3;
     pointer-events: none;
-    opacity: 0.95;
-    animation: floatMascot 4.5s ease-in-out infinite alternate-reverse;
 }
 
-.wave-pattern {
+.hero-main-img {
     width: 100%;
-    filter: drop-shadow(0 8px 16px rgba(255, 106, 0, 0.4));
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    filter: brightness(0.85) contrast(1.05);
 }
 
-@keyframes floatMascot {
+.floating-logo-card {
+    position: absolute;
+    background: rgba(10, 25, 47, 0.7);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 18px;
+    width: 78px;
+    height: 78px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.5), inset 0 0 10px rgba(255, 255, 255, 0.05);
+    animation: floatLogo var(--float-duration, 5s) ease-in-out var(--float-delay, 0s) infinite alternate;
+    z-index: 10;
+    transition: var(--transition-smooth);
+    cursor: pointer;
+}
+
+.floating-logo-card:hover {
+    transform: scale(1.18) translateY(-5px);
+    border-color: var(--primary-orange);
+    box-shadow: 0 15px 35px rgba(255, 106, 0, 0.35), 0 0 15px rgba(255, 106, 0, 0.2);
+}
+
+.logo-svg {
+    width: 100%;
+    height: 100%;
+}
+
+/* Float Animation Keyframes */
+@keyframes floatLogo {
     0% {
-        transform: translateY(0);
+        transform: translateY(0) rotate(0deg);
     }
     100% {
-        transform: translateY(-15px);
+        transform: translateY(-16px) rotate(3deg);
     }
 }
+
+/* Card positions relative to .hero-image-area container */
+.card-globoplay { top: 10%; left: -6%; }
+.card-netflix { top: 48%; left: -11%; }
+.card-deezer { top: 80%; left: -6%; }
+.card-hbo { top: 22%; right: -8%; }
+.card-disney { top: 68%; right: -6%; }
 
 @keyframes mascotGlow {
     0% {
@@ -2342,9 +2375,22 @@ h2.section-title {
         font-size: 0.7rem;
     }
 
-    .hero-mascot-img {
-        max-height: 380px;
+    .hero-image-wrapper {
+        max-width: 320px;
     }
+    
+    .floating-logo-card {
+        width: 58px;
+        height: 58px;
+        padding: 10px;
+        border-radius: 12px;
+    }
+    
+    .card-globoplay { top: 8%; left: 0%; }
+    .card-netflix { top: 45%; left: -6%; }
+    .card-deezer { top: 78%; left: 0%; }
+    .card-hbo { top: 20%; right: -2%; }
+    .card-disney { top: 66%; right: 0%; }
     
     /* Horizontal Swiper for Plans (Netflix style, native touch momentum) */
     .plans-grid {
