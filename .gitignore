@@ -1,0 +1,9 @@
+.DS_Store
+Thumbs.db
+node_modules/
+dist/
+.env*
+*.log
+# Opcional: ignorar o PDF original da campanha por ser muito grande (56MB)
+# Descomente a linha abaixo se não quiser enviar o PDF para o GitHub:
+# Campanha_Rua_Ultrafibra_Final2025.pdf

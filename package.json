@@ -1,0 +1,16 @@
+{
+  "name": "site-ultrafibra",
+  "version": "1.0.0",
+  "description": "Website Oficial Ultra Fibra - Landing Page Premium e Veloz",
+  "main": "index.html",
+  "scripts": {
+    "dev": "npx -y http-server -p 3000"
+  },
+  "keywords": [
+    "fibra",
+    "telecom",
+    "ultra"
+  ],
+  "author": "Ultra Fibra",
+  "license": "ISC"
+}
