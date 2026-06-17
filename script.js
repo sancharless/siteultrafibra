@@ -800,4 +800,203 @@ document.addEventListener('DOMContentLoaded', () => {
     // First tv category render on load
     renderTVCards('filmes');
 
+    /* ==========================================================================
+       13. REGISTRATION MODAL LOGIC
+       ========================================================================== */
+    const registerModal = document.getElementById('register-modal');
+    const btnCloseModal = document.getElementById('btn-close-modal');
+    const frmRegister = document.getElementById('frm-register');
+    const registerSuccess = document.getElementById('register-success');
+    const btnSubmitRegister = document.getElementById('btn-submit-register');
+    
+    const regCep = document.getElementById('reg-cep');
+    const regAddressInfo = document.getElementById('reg-address-info');
+    const regLblRua = document.getElementById('reg-lbl-rua');
+    const regLblBairro = document.getElementById('reg-lbl-bairro');
+    const regLblCidade = document.getElementById('reg-lbl-cidade');
+    
+    // Open Modal Function
+    window.openRegisterModal = function(planName) {
+        if (!registerModal) return;
+        
+        // Reset state
+        frmRegister.classList.remove('d-none');
+        registerSuccess.classList.add('d-none');
+        frmRegister.reset();
+        regAddressInfo.classList.add('d-none');
+        
+        // Select matching plan in select list if passed
+        const planSelect = document.getElementById('reg-plan');
+        if (planName) {
+            // Find option value that matches or contains the planName
+            let found = false;
+            for (let option of planSelect.options) {
+                if (option.value.toLowerCase().includes(planName.toLowerCase()) || 
+                    planName.toLowerCase().includes(option.value.toLowerCase())) {
+                    planSelect.value = option.value;
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                planSelect.value = "";
+            }
+        } else {
+            planSelect.value = "";
+        }
+        
+        // Pre-populate address if CEP check has been run in Coverage section
+        const coverageCep = document.getElementById('cep-input').value;
+        const coverageNum = document.getElementById('house-number').value;
+        
+        if (coverageCep) {
+            regCep.value = coverageCep;
+            const street = document.getElementById('lbl-rua').textContent;
+            const neighborhood = document.getElementById('lbl-bairro').textContent;
+            const city = document.getElementById('lbl-cidade').textContent;
+            
+            if (street && street !== '-') {
+                regLblRua.textContent = street;
+                regLblBairro.textContent = neighborhood;
+                regLblCidade.textContent = city;
+                regAddressInfo.classList.remove('d-none');
+            }
+        }
+        if (coverageNum) {
+            document.getElementById('reg-number').value = coverageNum;
+        }
+        
+        registerModal.classList.add('open');
+        document.body.style.overflow = 'hidden'; // Stop page scrolling
+    }
+    
+    // Close Modal Function
+    window.closeRegisterModal = function() {
+        if (!registerModal) return;
+        registerModal.classList.remove('open');
+        document.body.style.overflow = ''; // Restore page scrolling
+    }
+    
+    if (btnCloseModal) {
+        btnCloseModal.addEventListener('click', closeRegisterModal);
+    }
+    
+    // Close when clicking outside modal container
+    if (registerModal) {
+        registerModal.addEventListener('click', (e) => {
+            if (e.target === registerModal) {
+                closeRegisterModal();
+            }
+        });
+    }
+    
+    // Event delegation on plans grid CTA click
+    if (plansGrid) {
+        plansGrid.addEventListener('click', (e) => {
+            const btn = e.target.closest('.btn-block');
+            if (btn) {
+                e.preventDefault();
+                const card = btn.closest('.plan-card');
+                if (card) {
+                    const planName = card.querySelector('.plan-header h3').textContent.trim();
+                    window.openRegisterModal(planName);
+                }
+            }
+        });
+    }
+    
+    // Header CTA click
+    const navCta = document.getElementById('nav-cta');
+    if (navCta) {
+        navCta.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.openRegisterModal();
+        });
+    }
+    
+    // CEP input formatting inside modal
+    if (regCep) {
+        regCep.addEventListener('input', async (e) => {
+            let val = e.target.value.replace(/\D/g, '');
+            if (val.length > 5) {
+                val = val.substring(0,5) + '-' + val.substring(5,8);
+            }
+            e.target.value = val;
+            
+            const rawCep = val.replace(/\D/g, '');
+            if (rawCep.length === 8) {
+                try {
+                    const response = await fetch(`https://viacep.com.br/ws/${rawCep}/json/`);
+                    const data = await response.json();
+                    
+                    if (!data.erro) {
+                        regLblRua.textContent = data.logradouro || 'Rua não cadastrada';
+                        regLblBairro.textContent = data.bairro || 'Bairro Geral';
+                        regLblCidade.textContent = `${data.localidade} - ${data.uf}`;
+                        regAddressInfo.classList.remove('d-none');
+                    } else {
+                        regAddressInfo.classList.add('d-none');
+                    }
+                } catch (err) {
+                    console.error(err);
+                    regAddressInfo.classList.add('d-none');
+                }
+            } else {
+                regAddressInfo.classList.add('d-none');
+            }
+        });
+    }
+    
+    // Submit registration modal form
+    if (frmRegister) {
+        frmRegister.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const name = document.getElementById('reg-name').value;
+            const phone = document.getElementById('reg-phone').value;
+            const cep = document.getElementById('reg-cep').value;
+            const num = document.getElementById('reg-number').value;
+            const plan = document.getElementById('reg-plan').value;
+            const street = regAddressInfo.classList.contains('d-none') ? 'Não informado' : regLblRua.textContent;
+            const neighborhood = regAddressInfo.classList.contains('d-none') ? 'Não informado' : regLblBairro.textContent;
+            const city = regAddressInfo.classList.contains('d-none') ? 'Não informado' : regLblCidade.textContent;
+            
+            btnSubmitRegister.disabled = true;
+            btnSubmitRegister.textContent = 'Enviando...';
+            
+            setTimeout(() => {
+                frmRegister.classList.add('d-none');
+                registerSuccess.classList.remove('d-none');
+                
+                document.getElementById('success-user-name').textContent = name;
+                document.getElementById('success-user-phone').textContent = phone;
+                
+                btnSubmitRegister.disabled = false;
+                btnSubmitRegister.textContent = 'Enviar e Finalizar Cadastro';
+                
+                // Save WhatsApp redirect logic on checkmark CTA click
+                const messageText = `Olá Ultra Fibra! Acabei de preencher o cadastro de interesse no site.\n\n` +
+                                    `*Nome:* ${name}\n` +
+                                    `*Telefone:* ${phone}\n` +
+                                    `*Plano:* ${plan}\n` +
+                                    `*CEP:* ${cep}\n` +
+                                    `*Endereço:* ${street}, Nº ${num} - ${neighborhood}, ${city}`;
+                const encodedMsg = encodeURIComponent(messageText);
+                const whatsappUrl = `https://wa.me/5598999999999?text=${encodedMsg}`;
+                
+                const btnSuccessClose = document.getElementById('btn-success-close');
+                
+                // Clear old listeners if any
+                const newBtn = btnSuccessClose.cloneNode(true);
+                btnSuccessClose.parentNode.replaceChild(newBtn, btnSuccessClose);
+                
+                newBtn.addEventListener('click', () => {
+                    window.open(whatsappUrl, '_blank');
+                    window.closeRegisterModal();
+                });
+                
+            }, 1200);
+        });
+    }
+
 });
