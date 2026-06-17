@@ -353,7 +353,11 @@ img {
    HERO SECTION
    ========================================================================== */
 .hero-section {
-    background-color: var(--dark-bg);
+    position: relative;
+    background-image: url('assets/images/hero_family_connected.png');
+    background-size: cover;
+    background-position: center right;
+    background-repeat: no-repeat;
     overflow: hidden;
     padding-top: 150px;
     padding-bottom: 80px;
@@ -362,13 +366,30 @@ img {
     align-items: center;
 }
 
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        rgba(10,15,25,0.92) 0%,
+        rgba(10,15,25,0.75) 45%,
+        rgba(10,15,25,0.55) 100%
+    );
+    z-index: 1;
+    pointer-events: none;
+}
+
 .fiber-glow-bg {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 1;
+    z-index: 2;
     pointer-events: none;
     opacity: 0.65;
 }
@@ -419,7 +440,7 @@ img {
     gap: 48px;
     align-items: center;
     position: relative;
-    z-index: 2;
+    z-index: 3;
 }
 
 .hero-content {
@@ -500,55 +521,33 @@ img {
     font-size: 0.8rem;
 }
 
-.hero-image-area {
+.hero-interactive-area {
     position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
     width: 100%;
-}
-
-.hero-image-wrapper {
-    position: relative;
-    width: 100%;
-    max-width: 440px;
-    border-radius: 24px;
-    overflow: hidden;
-    border: 1.5px solid rgba(255, 106, 0, 0.25);
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
-    z-index: 2;
-    aspect-ratio: 1 / 1;
-}
-
-.hero-image-overlay {
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: linear-gradient(135deg, rgba(6, 15, 30, 0.5) 0%, rgba(6, 15, 30, 0.1) 60%, rgba(6, 15, 30, 0.6) 100%);
-    z-index: 3;
-    pointer-events: none;
-}
-
-.hero-main-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-    filter: brightness(0.85) contrast(1.05);
+    height: 550px;
+    z-index: 4;
 }
 
 .floating-logo-card {
     position: absolute;
-    background: rgba(10, 25, 47, 0.7);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 18px;
-    width: 78px;
-    height: 78px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 20px;
+    width: 82px;
+    height: 82px;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 14px;
-    box-shadow: 0 12px 30px rgba(0,0,0,0.5), inset 0 0 10px rgba(255, 255, 255, 0.05);
+    padding: 15px;
+    box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.2);
     animation: floatLogo var(--float-duration, 5s) ease-in-out var(--float-delay, 0s) infinite alternate;
     z-index: 10;
     transition: var(--transition-smooth);
@@ -556,9 +555,11 @@ img {
 }
 
 .floating-logo-card:hover {
-    transform: scale(1.18) translateY(-5px);
-    border-color: var(--primary-orange);
-    box-shadow: 0 15px 35px rgba(255, 106, 0, 0.35), 0 0 15px rgba(255, 106, 0, 0.2);
+    transform: scale(1.15) translateY(-8px);
+    border-color: rgba(255, 255, 255, 0.35);
+    box-shadow: 
+        0 25px 45px rgba(0, 0, 0, 0.5),
+        0 0 25px var(--glow-color, rgba(255, 106, 0, 0.4));
 }
 
 .logo-svg {
@@ -576,12 +577,71 @@ img {
     }
 }
 
-/* Card positions relative to .hero-image-area container */
-.card-globoplay { top: 10%; left: -6%; }
-.card-netflix { top: 48%; left: -11%; }
-.card-deezer { top: 80%; left: -6%; }
-.card-hbo { top: 22%; right: -8%; }
-.card-disney { top: 68%; right: -6%; }
+/* Card positions relative to .hero-interactive-area container */
+.card-netflix { top: 12%; right: 15%; }
+.card-globoplay { top: 40%; left: 12%; }
+.card-sportv { top: 18%; left: -5%; }
+.card-disney { bottom: 15%; right: 10%; }
+.card-prime { bottom: 12%; left: 8%; }
+.card-max { top: 5%; left: 45%; }
+.card-youtube { top: 48%; right: -2%; }
+
+/* Fiber Optic Particles */
+.fiber-particles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 5;
+}
+
+.particle {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: linear-gradient(90deg, var(--primary-orange), var(--secondary-magenta));
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--primary-orange), 0 0 18px var(--secondary-magenta);
+    opacity: 0;
+}
+
+.particle.path-1 {
+    animation: particlePath1 var(--particle-duration, 5s) linear infinite;
+    animation-delay: var(--particle-delay, 0s);
+}
+
+.particle.path-2 {
+    animation: particlePath2 var(--particle-duration, 6s) linear infinite;
+    animation-delay: var(--particle-delay, 0s);
+}
+
+.particle.path-3 {
+    animation: particlePath3 var(--particle-duration, 7s) linear infinite;
+    animation-delay: var(--particle-delay, 0s);
+}
+
+@keyframes particlePath1 {
+    0% { transform: translate(0, 0) scale(0.5); opacity: 0; }
+    10% { opacity: 0.9; }
+    90% { opacity: 0.9; }
+    100% { transform: translate(250px, -180px) scale(1.2); opacity: 0; }
+}
+
+@keyframes particlePath2 {
+    0% { transform: translate(0, 0) scale(0.5); opacity: 0; }
+    15% { opacity: 0.8; }
+    85% { opacity: 0.8; }
+    100% { transform: translate(-220px, -140px) scale(1.1); opacity: 0; }
+}
+
+@keyframes particlePath3 {
+    0% { transform: translate(0, 0) scale(0.5); opacity: 0; }
+    20% { opacity: 1; }
+    80% { opacity: 1; }
+    100% { transform: translate(180px, 150px) scale(1); opacity: 0; }
+}
 
 @keyframes mascotGlow {
     0% {
@@ -2290,7 +2350,7 @@ h2.section-title {
     }
     
     /* Text content first on mobile for faster CTA conversion */
-    .hero-image-area {
+    .hero-interactive-area {
         order: 1; 
     }
     
@@ -2375,22 +2435,33 @@ h2.section-title {
         font-size: 0.7rem;
     }
 
-    .hero-image-wrapper {
-        max-width: 320px;
+    .hero-section::before {
+        background: linear-gradient(
+            180deg,
+            rgba(10, 15, 25, 0.95) 0%,
+            rgba(10, 15, 25, 0.82) 50%,
+            rgba(10, 15, 25, 0.95) 100%
+        );
+    }
+
+    .hero-interactive-area {
+        height: 380px;
     }
     
     .floating-logo-card {
-        width: 58px;
-        height: 58px;
-        padding: 10px;
+        width: 54px;
+        height: 54px;
+        padding: 9px;
         border-radius: 12px;
     }
     
-    .card-globoplay { top: 8%; left: 0%; }
-    .card-netflix { top: 45%; left: -6%; }
-    .card-deezer { top: 78%; left: 0%; }
-    .card-hbo { top: 20%; right: -2%; }
-    .card-disney { top: 66%; right: 0%; }
+    .card-netflix { top: 10%; right: 15%; }
+    .card-globoplay { top: 40%; left: 8%; }
+    .card-sportv { top: 20%; left: -2%; }
+    .card-disney { bottom: 15%; right: 8%; }
+    .card-prime { bottom: 10%; left: 10%; }
+    .card-max { top: 5%; left: 45%; }
+    .card-youtube { top: 48%; right: -2%; }
     
     /* Horizontal Swiper for Plans (Netflix style, native touch momentum) */
     .plans-grid {
