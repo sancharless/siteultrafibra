@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultra Fibra | Painel Administrativo do Chatbot</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Inline SVG Favicon (Glowing U logo) -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='og' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23FF6A00'/%3E%3Cstop offset='100%25' stop-color='%23FF007F'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M25,20 L25,55 C25,68.8 36.2,80 50,80 C63.8,80 75,68.8 75,55 L75,20 L60,20 L60,55 C60,60.5 55.5,65 50,65 C44.5,65 40,60.5 40,55 L40,20 L25,20 Z' fill='url(%23og)'/%3E%3C/svg%3E">
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+    <!-- CONTAINER DE LOGIN SEGURO -->
+    <div id="login-container" class="login-wrapper">
+        <div class="login-card">
+            <div class="logo-wrapper">
+                <span class="logo-text">ULTRA<span class="gradient-text">FIBRA</span></span>
+            </div>
+            <h2>Painel do Operador</h2>
+            <p>Faça login para gerenciar as conversas e o chatbot do WhatsApp (+55 98 9118-3681)</p>
+            
+            <form id="frm-login-admin" class="login-form">
+                <div class="form-group">
+                    <label for="admin-user">Usuário</label>
+                    <input type="text" id="admin-user" placeholder="Ex: admin" required>
+                </div>
+                <div class="form-group">
+                    <label for="admin-pass">Senha</label>
+                    <input type="password" id="admin-pass" placeholder="••••••••" required>
+                </div>
+                <button type="submit" id="btn-login-submit" class="btn btn-primary btn-block">Acessar Painel</button>
+            </form>
+            <div id="login-error" class="login-error-msg d-none">Usuário ou senha administrativa inválidos.</div>
+        </div>
+    </div>
+
+    <!-- PAINEL ADMINISTRATIVO PRINCIPAL (D-NONE POR PADRÃO) -->
+    <div id="admin-dashboard" class="dashboard-wrapper d-none">
+        
+        <!-- SIDEBAR DE CHATS -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-wrapper">
+                    <span class="logo-text">ULTRA<span class="gradient-text">FIBRA</span></span>
+                    <span class="badge badge-admin">ADMIN</span>
+                </div>
+            </div>
+
+            <!-- CONTROLE DE ATIVAÇÃO DO BOT -->
+            <div class="bot-control-panel">
+                <div class="control-header">
+                    <span>Chatbot Status</span>
+                    <span id="bot-status-indicator" class="status-indicator active">ATIVO</span>
+                </div>
+                <div class="toggle-container">
+                    <label class="switch">
+                        <input type="checkbox" id="chk-bot-toggle" checked>
+                        <span class="slider round"></span>
+                    </label>
+                    <span class="toggle-label">Responder automaticamente</span>
+                </div>
+            </div>
+
+            <div class="sidebar-title">
+                Conversas Ativas
+            </div>
+            <div id="contact-list" class="contacts-list">
+                <!-- Inserido dinamicamente via JS -->
+            </div>
+
+            <button id="btn-logout" class="btn btn-logout">Desconectar</button>
+        </aside>
+
+        <!-- ÁREA DE CONVERSA PRINCIPAL -->
+        <main class="chat-area">
+            <header class="chat-header">
+                <div class="active-contact-info">
+                    <div class="contact-avatar">👤</div>
+                    <div>
+                        <h3 id="active-chat-name">Selecione uma conversa</h3>
+                        <p id="active-chat-phone">Escolha um contato na lista lateral para visualizar e interagir</p>
+                    </div>
+                </div>
+                <div class="chat-header-actions">
+                    <button id="btn-open-simulator" class="btn btn-secondary">Simular Cliente 📱</button>
+                </div>
+            </header>
+
+            <!-- HISTÓRICO DE MENSAGENS -->
+            <div id="message-history" class="message-history">
+                <div class="chat-welcome-screen">
+                    <div class="welcome-icon">💬</div>
+                    <h2>Central de Atendimento WhatsApp</h2>
+                    <p>Aqui você pode monitorar as respostas automáticas do chatbot em tempo real e intervir enviando mensagens manuais como operador humano.</p>
+                </div>
+            </div>
+
+            <!-- INPUT DE ENVIO DE MENSAGEM DO OPERADOR -->
+            <footer class="chat-footer">
+                <form id="frm-send-operator" class="chat-input-form">
+                    <input type="text" id="operator-message-input" placeholder="Digite sua resposta como Operador Humano..." disabled required autocomplete="off">
+                    <button type="submit" id="btn-send-operator" class="btn btn-primary" disabled>Enviar</button>
+                </form>
+            </footer>
+        </main>
+
+        <!-- SUBPAINEL FLUTUANTE: SIMULADOR DE CLIENTE (OPCIONAL/TOGLEABLE) -->
+        <div id="simulator-modal" class="modal-overlay">
+            <div class="modal-container">
+                <button id="btn-close-simulator" class="btn-close">&times;</button>
+                <div class="modal-header-form">
+                    <h2>Simulador de <span class="gradient-text">WhatsApp</span></h2>
+                    <p>Simule mensagens enviadas pelo cliente de um telefone de teste para verificar as respostas automáticas do Chatbot integrado ao Mikweb ERP.</p>
+                </div>
+                
+                <div class="form-group">
+                    <label for="sim-phone">Telefone do Cliente (Simulação)</label>
+                    <input type="text" id="sim-phone" value="+55 (98) 98122-3344" placeholder="+55 (98) 99999-9999" required>
+                </div>
+                <div class="form-group">
+                    <label for="sim-name">Nome do Cliente (Simulação)</label>
+                    <input type="text" id="sim-name" value="Maria Souza" placeholder="Ex: Maria Souza" required>
+                </div>
+
+                <div class="simulator-chat-preview" id="sim-messages-preview">
+                    <!-- Preview das mensagens trocadas nesta simulação -->
+                </div>
+
+                <form id="frm-simulator-send" class="simulator-input-form">
+                    <input type="text" id="sim-message-input" placeholder="Enviar mensagem como cliente..." required autocomplete="off">
+                    <button type="submit" class="btn btn-primary">Enviar ➡️</button>
+                </form>
+
+                <div class="simulator-quick-replies">
+                    <span>Atalhos Rápidos:</span>
+                    <button class="btn-quick-reply" data-text="Oi">"Oi"</button>
+                    <button class="btn-quick-reply" data-text="1">"1" (Segunda Via)</button>
+                    <button class="btn-quick-reply" data-text="12345678900">"12345678900" (CPF Demo)</button>
+                    <button class="btn-quick-reply" data-text="3">"3" (Planos)</button>
+                    <button class="btn-quick-reply" data-text="menu">"Menu"</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>

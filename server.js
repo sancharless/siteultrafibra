@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const url = require('url');
 const apiMikweb = require('./api/mikweb');
+const apiWhatsapp = require('./api/whatsapp');
 
 // Carrega variáveis do arquivo .env se existir
 try {
@@ -42,14 +43,26 @@ const server = http.createServer((req, res) => {
     
     // Roteador de API (/api/mikweb)
     if (parsedUrl.pathname === '/api/mikweb') {
-        // Lê o corpo da requisição para chamadas POST
         let body = '';
         req.on('data', chunk => {
             body += chunk.toString();
         });
         req.on('end', () => {
-            req.body = body; // Repassa o payload bruto para a serverless function
+            req.body = body;
             apiMikweb(req, res);
+        });
+        return;
+    }
+
+    // Roteador de API (/api/whatsapp)
+    if (parsedUrl.pathname === '/api/whatsapp') {
+        let body = '';
+        req.on('data', chunk => {
+            body += chunk.toString();
+        });
+        req.on('end', () => {
+            req.body = body;
+            apiWhatsapp(req, res);
         });
         return;
     }
