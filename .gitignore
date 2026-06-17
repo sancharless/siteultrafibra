@@ -7,3 +7,4 @@ dist/
 # Opcional: ignorar o PDF original da campanha por ser muito grande (56MB)
 # Descomente a linha abaixo se não quiser enviar o PDF para o GitHub:
 # Campanha_Rua_Ultrafibra_Final2025.pdf
+.vercel

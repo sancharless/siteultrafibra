@@ -188,29 +188,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const tvData = {
         filmes: [
-            { title: "Cine Ultra Max", tag: "Filme", url: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=300&auto=format&fit=crop" },
-            { title: "Interestelar 2", tag: "Ficção", url: "https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?q=80&w=300&auto=format&fit=crop" },
-            { title: "The Last Conect", tag: "Série", url: "https://images.unsplash.com/photo-1594909122845-11baa439b7bf?q=80&w=300&auto=format&fit=crop" }
+            { title: "Cine Ultra Max", tag: "Filme", url: "assets/images/mascot_tablet.png" },
+            { title: "Interestelar 2", tag: "Ficção", url: "assets/images/mascot_notebook.png" },
+            { title: "The Last Conect", tag: "Série", url: "assets/images/mascot_smartphone.png" }
         ],
         esportes: [
-            { title: "Brasileirão Série A", tag: "Futebol", url: "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=300&auto=format&fit=crop" },
-            { title: "Ultra Sports HD", tag: "Automobilismo", url: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?q=80&w=300&auto=format&fit=crop" },
-            { title: "Finais da NBA Live", tag: "Basquete", url: "https://images.unsplash.com/photo-1546519638-68e109498ffc?q=80&w=300&auto=format&fit=crop" }
+            { title: "Brasileirão Série A", tag: "Futebol", url: "assets/images/mascot_notebook.png" },
+            { title: "Ultra Sports HD", tag: "Automobilismo", url: "assets/images/mascot_smartphone.png" },
+            { title: "Finais da NBA Live", tag: "Basquete", url: "assets/images/mascot_tablet.png" }
         ],
         infantil: [
-            { title: "Cartoon Ultra", tag: "Desenho", url: "https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=300&auto=format&fit=crop" },
-            { title: "Disney Kids", tag: "Magia", url: "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?q=80&w=300&auto=format&fit=crop" },
-            { title: "Aventuras Animadas", tag: "Animação", url: "https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=300&auto=format&fit=crop" }
+            { title: "Cartoon Ultra", tag: "Desenho", url: "assets/images/mascot_smartphone.png" },
+            { title: "Disney Kids", tag: "Magia", url: "assets/images/mascot_tablet.png" },
+            { title: "Aventuras Animadas", tag: "Animação", url: "assets/images/mascot_notebook.png" }
         ],
         documentarios: [
-            { title: "Planeta Selvagem", tag: "Natureza", url: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?q=80&w=300&auto=format&fit=crop" },
-            { title: "Histórias do Espaço", tag: "Astronomia", url: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=300&auto=format&fit=crop" },
-            { title: "Grandes Civilizações", tag: "História", url: "https://images.unsplash.com/photo-1461360370896-922624d12aa1?q=80&w=300&auto=format&fit=crop" }
+            { title: "Planeta Selvagem", tag: "Natureza", url: "assets/images/mascot_tablet.png" },
+            { title: "Histórias do Espaço", tag: "Astronomia", url: "assets/images/mascot_notebook.png" },
+            { title: "Grandes Civilizações", tag: "História", url: "assets/images/mascot_smartphone.png" }
         ],
         noticias: [
-            { title: "CNN News Brasil", tag: "Jornalismo", url: "https://images.unsplash.com/photo-1585829365295-ab7cd400c167?q=80&w=300&auto=format&fit=crop" },
-            { title: "Ultra Notícias 24h", tag: "Ao Vivo", url: "https://images.unsplash.com/photo-1495020689067-958852a6565d?q=80&w=300&auto=format&fit=crop" },
-            { title: "Mercado Financeiro", tag: "Economia", url: "https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?q=80&w=300&auto=format&fit=crop" }
+            { title: "CNN News Brasil", tag: "Jornalismo", url: "assets/images/mascot_smartphone.png" },
+            { title: "Ultra Notícias 24h", tag: "Ao Vivo", url: "assets/images/mascot_tablet.png" },
+            { title: "Mercado Financeiro", tag: "Economia", url: "assets/images/mascot_notebook.png" }
         ]
     };
 
