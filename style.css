@@ -2435,17 +2435,24 @@ h2.section-title {
         font-size: 0.7rem;
     }
 
+    .hero-section {
+        background-position: 70% center;
+        padding-top: 130px;
+        padding-bottom: 40px;
+    }
+
     .hero-section::before {
         background: linear-gradient(
             180deg,
-            rgba(10, 15, 25, 0.95) 0%,
-            rgba(10, 15, 25, 0.82) 50%,
-            rgba(10, 15, 25, 0.95) 100%
+            rgba(10, 15, 25, 0.96) 0%,
+            rgba(10, 15, 25, 0.88) 35%,
+            rgba(10, 15, 25, 0.45) 65%,
+            rgba(10, 15, 25, 0.85) 100%
         );
     }
 
     .hero-interactive-area {
-        height: 380px;
+        height: 360px;
     }
     
     .floating-logo-card {
@@ -2455,13 +2462,13 @@ h2.section-title {
         border-radius: 12px;
     }
     
-    .card-netflix { top: 10%; right: 15%; }
-    .card-globoplay { top: 40%; left: 8%; }
-    .card-sportv { top: 20%; left: -2%; }
-    .card-disney { bottom: 15%; right: 8%; }
+    .card-netflix { top: 10%; right: 12%; }
+    .card-globoplay { top: 40%; left: 6%; }
+    .card-sportv { top: 20%; left: 2%; }
+    .card-disney { bottom: 15%; right: 6%; }
     .card-prime { bottom: 10%; left: 10%; }
-    .card-max { top: 5%; left: 45%; }
-    .card-youtube { top: 48%; right: -2%; }
+    .card-max { top: 5%; left: 42%; }
+    .card-youtube { top: 48%; right: 2%; }
     
     /* Horizontal Swiper for Plans (Netflix style, native touch momentum) */
     .plans-grid {
