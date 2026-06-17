@@ -825,27 +825,6 @@ document.addEventListener('DOMContentLoaded', () => {
         frmRegister.reset();
         regAddressInfo.classList.add('d-none');
         
-        // Reset CPF states
-        const modalHiddenFields = document.getElementById('modal-hidden-fields');
-        const cpfValidationMsg = document.getElementById('cpf-validation-msg');
-        const cpfSearchSpinner = document.getElementById('cpf-search-spinner');
-        const regCpf = document.getElementById('reg-cpf');
-        
-        if (modalHiddenFields) {
-            modalHiddenFields.classList.add('d-none');
-            modalHiddenFields.classList.remove('fade-in-form-group');
-        }
-        if (cpfValidationMsg) {
-            cpfValidationMsg.textContent = '';
-            cpfValidationMsg.className = 'validation-msg';
-        }
-        if (cpfSearchSpinner) {
-            cpfSearchSpinner.classList.add('d-none');
-        }
-        if (regCpf) {
-            regCpf.style.borderColor = 'rgba(255, 255, 255, 0.08)';
-        }
-        
         // Select matching plan in select list if passed
         const planSelect = document.getElementById('reg-plan');
         if (planName) {
@@ -935,40 +914,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    // CPF Mathematical Validation
-    function validateCPF(cpf) {
-        cpf = cpf.replace(/\D/g, '');
-        if (cpf.length !== 11) return false;
-        
-        // Sequence of identical digits check
-        if (/^(\d)\1{10}$/.test(cpf)) return false;
-        
-        let sum = 0;
-        for (let i = 0; i < 9; i++) {
-            sum += parseInt(cpf.charAt(i)) * (10 - i);
-        }
-        let rev = 11 - (sum % 11);
-        if (rev === 10 || rev === 11) rev = 0;
-        if (rev !== parseInt(cpf.charAt(9))) return false;
-        
-        sum = 0;
-        for (let i = 0; i < 10; i++) {
-            sum += parseInt(cpf.charAt(i)) * (11 - i);
-        }
-        rev = 11 - (sum % 11);
-        if (rev === 10 || rev === 11) rev = 0;
-        if (rev !== parseInt(cpf.charAt(10))) return false;
-        
-        return true;
-    }
-    
-    // CPF input mask and check query
+    // CPF input mask (000.000.000-00)
     const regCpf = document.getElementById('reg-cpf');
-    const cpfSearchSpinner = document.getElementById('cpf-search-spinner');
-    const cpfValidationMsg = document.getElementById('cpf-validation-msg');
-    const modalHiddenFields = document.getElementById('modal-hidden-fields');
-    const regName = document.getElementById('reg-name');
-    
     if (regCpf) {
         regCpf.addEventListener('input', (e) => {
             let val = e.target.value.replace(/\D/g, '');
@@ -978,61 +925,6 @@ document.addEventListener('DOMContentLoaded', () => {
                          .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
             }
             e.target.value = val;
-            
-            const cleanCpf = val.replace(/\D/g, '');
-            
-            if (cleanCpf.length < 11) {
-                modalHiddenFields.classList.add('d-none');
-                modalHiddenFields.classList.remove('fade-in-form-group');
-                cpfValidationMsg.textContent = '';
-                cpfValidationMsg.className = 'validation-msg';
-                cpfSearchSpinner.classList.add('d-none');
-                regCpf.style.borderColor = 'rgba(255, 255, 255, 0.08)';
-                return;
-            }
-            
-            if (validateCPF(cleanCpf)) {
-                // Show loading
-                cpfValidationMsg.textContent = 'Consultando Receita Federal e base do Governo...';
-                cpfValidationMsg.className = 'validation-msg loading';
-                cpfSearchSpinner.classList.remove('d-none');
-                regCpf.style.borderColor = 'var(--primary-orange)';
-                
-                setTimeout(() => {
-                    cpfSearchSpinner.classList.add('d-none');
-                    
-                    const mockNames = [
-                        "Joseph Nascimento",
-                        "Maria Silva Oliveira",
-                        "Carlos Eduardo Souza",
-                        "Ana Julia Santos",
-                        "Lucas Ferreira Lima",
-                        "Amanda Costa Ribeiro",
-                        "Roberto Alves Pereira",
-                        "Camila Rodrigues Mello",
-                        "Bruno Carvalho Gomes",
-                        "Juliana Barbosa Rocha"
-                    ];
-                    const lastDigit = parseInt(cleanCpf.charAt(10));
-                    const selectedName = mockNames[lastDigit];
-                    
-                    regName.value = selectedName;
-                    
-                    cpfValidationMsg.textContent = `✓ CPF Confirmado! Titular: ${selectedName}`;
-                    cpfValidationMsg.className = 'validation-msg success';
-                    regCpf.style.borderColor = '#25D366';
-                    
-                    modalHiddenFields.classList.remove('d-none');
-                    modalHiddenFields.classList.add('fade-in-form-group');
-                }, 1200);
-            } else {
-                cpfValidationMsg.textContent = '❌ CPF inválido. Verifique os dígitos.';
-                cpfValidationMsg.className = 'validation-msg error';
-                regCpf.style.borderColor = '#ff4d4d';
-                modalHiddenFields.classList.add('d-none');
-                modalHiddenFields.classList.remove('fade-in-form-group');
-                cpfSearchSpinner.classList.add('d-none');
-            }
         });
     }
     
@@ -1074,8 +966,8 @@ document.addEventListener('DOMContentLoaded', () => {
         frmRegister.addEventListener('submit', (e) => {
             e.preventDefault();
             
-            const cpfVal = regCpf.value;
-            const name = regName.value;
+            const cpfVal = regCpf ? regCpf.value : '';
+            const name = document.getElementById('reg-name').value;
             const phone = document.getElementById('reg-phone').value;
             const cep = regCep.value;
             const num = document.getElementById('reg-number').value;
