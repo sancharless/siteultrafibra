@@ -2234,19 +2234,29 @@ input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focu
    RESPONSIVE LAYOUTS (MOBILE FIRST & BREAKPOINTS)
    ========================================================================== */
 
+/* Fluid Typography using clamp for header/sections */
+h1.hero-title {
+    font-size: clamp(2.2rem, 8vw, 3.5rem);
+}
+h2.section-title {
+    font-size: clamp(1.8rem, 6vw, 2.5rem);
+}
+
 /* Up to 1024px */
 @media (max-width: 1024px) {
     .hero-container, .coverage-layout, .portal-layout, .referral-layout, .faq-layout, .contact-layout {
         grid-template-columns: 1fr;
-        gap: 50px;
+        gap: 40px;
     }
     
     .tv-layout {
         grid-template-columns: 1fr;
+        gap: 40px;
     }
     
+    /* Text content first on mobile for faster CTA conversion */
     .hero-image-area {
-        order: -1;
+        order: 1; 
     }
     
     .portal-mascot-side, .faq-mascot-side {
@@ -2255,27 +2265,21 @@ input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focu
     
     .footer-grid {
         grid-template-columns: repeat(2, 1fr);
+        gap: 30px;
     }
 }
 
-/* Up to 768px */
+/* Up to 768px (Mobile Devices - 95% of users) */
 @media (max-width: 768px) {
     section {
-        padding: 60px 0;
-    }
-    
-    .hero-title {
-        font-size: 2.6rem;
-    }
-    
-    .section-title {
-        font-size: 2rem;
+        padding: 50px 0;
     }
     
     .mobile-toggle {
         display: flex;
     }
     
+    /* Mobile full-screen navigation overlay */
     .nav-menu {
         position: fixed;
         top: 80px;
@@ -2295,38 +2299,167 @@ input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focu
     
     .nav-menu ul {
         flex-direction: column;
-        gap: 30px;
+        gap: 24px;
         align-items: center;
     }
     
     .nav-link {
-        font-size: 1.2rem;
+        font-size: 1.25rem;
     }
     
     .header-actions .btn {
-        display: none; /* Hide header button on mobile, user uses mobile nav */
+        display: none;
     }
     
+    /* 2x2 Grid for Hero Indicators (saves height, looks like a dashboard) */
     .hero-indicators {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+        padding-top: 24px;
+    }
+    
+    .indicator-item {
+        gap: 8px;
+    }
+    
+    .indicator-icon-wrapper {
+        width: 36px;
+        height: 36px;
+    }
+    
+    .indicator-icon {
+        width: 16px;
+        height: 16px;
+    }
+    
+    .indicator-title {
+        font-size: 0.85rem;
+    }
+    
+    .indicator-sub {
+        font-size: 0.7rem;
+    }
+
+    .hero-mascot-img {
+        max-height: 380px;
+    }
+    
+    /* Horizontal Swiper for Plans (Netflix style, native touch momentum) */
+    .plans-grid {
+        display: flex;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        gap: 16px;
+        padding: 10px 4px 24px 4px;
+        margin-bottom: 20px;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .plans-grid::-webkit-scrollbar {
+        display: none;
+    }
+    
+    .plan-card {
+        min-width: 290px;
+        flex-shrink: 0;
+        scroll-snap-align: center;
     }
     
     .plans-mascot-footer {
         flex-direction: column;
         text-align: center;
-        padding: 30px 24px;
+        padding: 24px;
     }
     
     .plans-mascot-img {
-        margin-top: 24px;
+        margin-top: 16px;
+        height: 100px;
     }
     
+    /* Horizontal Swiper for TV categories */
     .tv-cards-grid {
-        grid-template-columns: 1fr;
+        display: flex;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        gap: 16px;
+        padding-bottom: 16px;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .tv-cards-grid::-webkit-scrollbar {
+        display: none;
+    }
+    
+    .streaming-card {
+        min-width: 200px;
+        flex-shrink: 0;
+        scroll-snap-align: center;
+    }
+    
+    .streaming-card-img {
+        height: 180px;
+    }
+    
+    /* Horizontal Swiper for Blog Posts */
+    .blog-grid {
+        display: flex;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        gap: 16px;
+        padding-bottom: 20px;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .blog-grid::-webkit-scrollbar {
+        display: none;
+    }
+    
+    .blog-card {
+        min-width: 280px;
+        flex-shrink: 0;
+        scroll-snap-align: center;
+    }
+    
+    .blog-filters {
+        gap: 8px;
+        margin-bottom: 30px;
+    }
+    
+    .filter-btn {
+        padding: 6px 14px;
+        font-size: 0.8rem;
+    }
+    
+    /* Speedtest adjustments */
+    .speedtest-widget {
+        padding: 24px;
+    }
+    
+    .gauge-container {
+        width: 200px;
+        height: 200px;
+    }
+    
+    .speed-num {
+        font-size: 2.2rem;
     }
     
     .speed-stats-grid {
         grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        margin-bottom: 24px;
+    }
+    
+    .stat-val {
+        font-size: 1.2rem;
+    }
+    
+    /* Referral tracking box */
+    .referral-card {
+        padding: 24px;
     }
     
     .form-row {
@@ -2334,7 +2467,35 @@ input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focu
         gap: 0;
     }
     
+    /* Accordion FAQ spacing */
+    .accordion-header {
+        font-size: 1rem;
+        padding: 16px 0;
+    }
+    
+    /* Contact and Footer spacing */
+    .contact-form-card {
+        padding: 24px;
+    }
+    
     .footer-grid {
         grid-template-columns: 1fr;
+        gap: 30px;
     }
 }
+
+/* Extra small mobile devices optimization */
+@media (max-width: 380px) {
+    .hero-buttons {
+        flex-direction: column;
+    }
+    
+    .hero-buttons .btn {
+        width: 100%;
+    }
+    
+    .plan-card {
+        min-width: 260px;
+    }
+}
+
