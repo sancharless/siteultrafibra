@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnSendOperator = document.getElementById('btn-send-operator');
     const frmSendOperator = document.getElementById('frm-send-operator');
     const btnLogout = document.getElementById('btn-logout');
+    const waStatusIndicator = document.getElementById('wa-status-indicator');
 
     // ELEMENTOS DO SIMULADOR
     const btnOpenSimulator = document.getElementById('btn-open-simulator');
@@ -132,6 +133,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // Renderiza a lista de conversas
                 renderContactsList(data.chats);
+
+                // Atualiza o status de conexão com o WhatsApp real
+                if (waStatusIndicator) {
+                    if (data.whatsappConnected) {
+                        waStatusIndicator.textContent = 'CONECTADO';
+                        waStatusIndicator.classList.add('active');
+                    } else {
+                        waStatusIndicator.textContent = 'DESCONECTADO';
+                        waStatusIndicator.classList.remove('active');
+                    }
+                }
                 
                 // Atualiza o chat ativo se houver
                 if (currentActivePhone) {

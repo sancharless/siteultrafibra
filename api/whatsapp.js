@@ -74,10 +74,29 @@ module.exports = async (req, res) => {
                 return respondWithError(res, 401, "Acesso não autorizado.");
             }
 
+            let whatsappConnected = false;
+            const instanceId = process.env.ZAPI_INSTANCE_ID;
+            const token = process.env.ZAPI_TOKEN;
+
+            if (instanceId && token) {
+                try {
+                    const zapiRes = await fetch(`https://api.z-api.io/instances/${instanceId}/token/${token}/status`);
+                    if (zapiRes.ok) {
+                        const zapiData = await zapiRes.json();
+                        whatsappConnected = zapiData.connected === true || zapiData.instanceStatus === 'CONNECTED';
+                    }
+                } catch (e) {
+                    console.error("Erro ao verificar conexao no Z-API:", e);
+                }
+            } else {
+                whatsappConnected = true; // Fallback de desenvolvimento local
+            }
+
             return respondWithJson(res, 200, {
                 success: true,
                 botEnabled: state.botEnabled,
-                chats: Object.values(state.chats)
+                chats: Object.values(state.chats),
+                whatsappConnected
             });
 
         } else if (action === 'toggle_bot') {
