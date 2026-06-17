@@ -1598,6 +1598,229 @@ input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focu
     border: 1px solid rgba(255, 106, 0, 0.15);
 }
 
+/* Subviews da Central do Assinante */
+.dashboard-subview {
+    margin-top: 20px;
+    animation: fadeIn 0.3s ease;
+}
+
+.subview-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding-bottom: 12px;
+}
+
+.subview-title {
+    font-family: var(--font-heading);
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-white);
+}
+
+.btn-back-dash {
+    background-color: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: var(--text-gray);
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.btn-back-dash:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+    color: var(--text-white);
+}
+
+/* Tabela de Faturas */
+.billing-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.billing-item {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr 1fr 1fr;
+    align-items: center;
+    padding: 16px 20px;
+    background-color: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    gap: 12px;
+    transition: var(--transition-fast);
+}
+
+.billing-item:hover {
+    background-color: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.billing-info-title {
+    font-weight: 600;
+    color: var(--text-white);
+    font-size: 0.9rem;
+}
+
+.billing-info-date {
+    font-size: 0.8rem;
+    color: var(--text-gray);
+}
+
+.billing-value {
+    font-weight: 700;
+    color: var(--text-white);
+}
+
+.billing-status-badge {
+    justify-self: start;
+    padding: 3px 10px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    border-radius: 50px;
+}
+
+.status-pago {
+    background-color: rgba(37, 211, 102, 0.1);
+    border: 1px solid rgba(37, 211, 102, 0.25);
+    color: #25d366;
+}
+
+.status-aberto {
+    background-color: rgba(255, 165, 0, 0.1);
+    border: 1px solid rgba(255, 165, 0, 0.25);
+    color: #ffa500;
+}
+
+.status-vencido {
+    background-color: rgba(255, 77, 77, 0.1);
+    border: 1px solid rgba(255, 77, 77, 0.25);
+    color: #ff4d4d;
+}
+
+.billing-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+}
+
+.btn-billing-action {
+    background-color: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: var(--text-gray);
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    text-decoration: none;
+}
+
+.btn-billing-action:hover {
+    background-color: rgba(255, 106, 0, 0.1);
+    border-color: rgba(255, 106, 0, 0.3);
+    color: var(--primary-orange);
+}
+
+/* Suporte / Chamados */
+.ticket-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.ticket-item {
+    background-color: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    padding: 16px;
+    transition: var(--transition-fast);
+}
+
+.ticket-item:hover {
+    background-color: rgba(255, 255, 255, 0.04);
+}
+
+.ticket-header-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.ticket-subject {
+    font-weight: 700;
+    color: var(--text-white);
+    font-size: 0.95rem;
+}
+
+.ticket-date {
+    font-size: 0.75rem;
+    color: var(--text-gray);
+}
+
+.ticket-message {
+    font-size: 0.85rem;
+    color: var(--text-gray);
+    line-height: 1.4;
+}
+
+.ticket-status-badge {
+    padding: 2px 8px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    border-radius: 4px;
+    text-transform: uppercase;
+}
+
+.ticket-status-aberto {
+    background-color: rgba(0, 174, 239, 0.1);
+    border: 1px solid rgba(0, 174, 239, 0.25);
+    color: #00aeef;
+}
+
+.ticket-status-respondido {
+    background-color: rgba(37, 211, 102, 0.1);
+    border: 1px solid rgba(37, 211, 102, 0.25);
+    color: #25d366;
+}
+
+.ticket-status-finalizado {
+    background-color: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: var(--text-gray);
+}
+
+.support-new-ticket {
+    border-top: 1px dashed rgba(255, 255, 255, 0.1);
+    padding-top: 24px;
+}
+
+.support-new-ticket h4 {
+    margin-bottom: 16px;
+    color: var(--text-white);
+}
+
+@media (max-width: 600px) {
+    .billing-item {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+    .billing-actions {
+        grid-column: span 2;
+        justify-content: flex-start;
+        margin-top: 8px;
+    }
+}
+
 /* ==========================================================================
    TESTE DE VELOCIDADE
    ========================================================================== */

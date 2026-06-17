@@ -726,13 +726,13 @@
                         <div class="dash-grid">
                             <div class="dash-item active-plan-item">
                                 <span class="dash-item-title">Plano Ativo</span>
-                                <span class="dash-item-value">600 MEGA</span>
-                                <span class="dash-item-sub">Instalação 100% ativa</span>
+                                <span class="dash-item-value" id="dash-plan-name">600 MEGA</span>
+                                <span class="dash-item-sub" id="dash-plan-status">Instalação 100% ativa</span>
                             </div>
                             <div class="dash-item">
                                 <span class="dash-item-title">Vencimento</span>
-                                <span class="dash-item-value">Dia 10</span>
-                                <span class="dash-item-sub">Status: Em dia</span>
+                                <span class="dash-item-value" id="dash-due-day">Dia 10</span>
+                                <span class="dash-item-sub" id="dash-due-status">Status: Em dia</span>
                             </div>
                         </div>
 
@@ -762,6 +762,17 @@
                                 <span class="action-icon">🔑</span>
                                 <span class="action-title">Alterar Senha</span>
                             </button>
+                        </div>
+
+                        <!-- Subview Container (Dynamic content will be loaded here) -->
+                        <div class="dashboard-subview d-none" id="dashboard-subview">
+                            <div class="subview-header">
+                                <h4 class="subview-title" id="subview-title">Título da Seção</h4>
+                                <button class="btn-back-dash" id="btn-back-dash">Voltar ao Início</button>
+                            </div>
+                            <div class="subview-body" id="subview-body">
+                                <!-- Conteúdo dinâmico injetado via JS -->
+                            </div>
                         </div>
 
                         <!-- Simulated ERP Integration Indicator -->

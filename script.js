@@ -437,7 +437,228 @@ document.addEventListener('DOMContentLoaded', () => {
         e.target.value = value;
     });
 
-    btnLogin.addEventListener('click', () => {
+    let currentCustomer = null;
+
+    // Seletores de Subview da Central
+    const subviewEl = document.getElementById('dashboard-subview');
+    const subviewTitleEl = document.getElementById('subview-title');
+    const subviewBodyEl = document.getElementById('subview-body');
+    const dashGridEl = document.querySelector('.dash-grid');
+    const dashActionsEl = document.querySelector('.dash-actions-grid');
+    const btnBackDash = document.getElementById('btn-back-dash');
+
+    function openSubview(title, htmlContent) {
+        if (!subviewEl) return;
+        subviewTitleEl.textContent = title;
+        subviewBodyEl.innerHTML = htmlContent;
+        
+        dashGridEl.classList.add('d-none');
+        dashActionsEl.classList.add('d-none');
+        subviewEl.classList.remove('d-none');
+    }
+
+    function closeSubview() {
+        if (!subviewEl) return;
+        subviewEl.classList.add('d-none');
+        dashGridEl.classList.remove('d-none');
+        dashActionsEl.classList.remove('d-none');
+    }
+
+    if (btnBackDash) {
+        btnBackDash.addEventListener('click', closeSubview);
+    }
+
+    // Busca de Faturas no Mikweb
+    async function loadBillings(title) {
+        openSubview(title, '<div class="text-center py-4 text-gray">Carregando faturas...</div>');
+        try {
+            const response = await fetch(`/api/mikweb?action=billings&customer_id=${currentCustomer.id}`);
+            const data = await response.json();
+            if (!data.success) {
+                subviewBodyEl.innerHTML = `<div class="text-center text-danger py-4">Erro ao carregar faturas: ${data.error || 'Erro desconhecido'}</div>`;
+                return;
+            }
+            
+            const billings = data.billings || [];
+            if (billings.length === 0) {
+                subviewBodyEl.innerHTML = `<div class="text-center py-4 text-gray">Nenhuma fatura encontrada.</div>`;
+                return;
+            }
+
+            let html = '<div class="billing-list">';
+            billings.forEach(b => {
+                const statusLower = (b.status || "Aberto").toLowerCase();
+                const statusClass = statusLower === 'pago' ? 'status-pago' : 
+                                    (statusLower === 'vencido' ? 'status-vencido' : 'status-aberto');
+                
+                const formattedDate = b.due_date ? b.due_date.split('-').reverse().join('/') : '--/--/----';
+                const formattedVal = parseFloat(b.value).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                const displayStatus = statusLower === 'pago' ? 'Pago' : (statusLower === 'vencido' ? 'Vencido' : 'Pendente');
+                
+                html += `
+                <div class="billing-item">
+                     <div>
+                         <div class="billing-info-title">Fatura #${b.id}</div>
+                         <div class="billing-info-date">Vencimento: ${formattedDate}</div>
+                     </div>
+                     <div class="billing-value">${formattedVal}</div>
+                     <div class="billing-status-badge ${statusClass}">${displayStatus}</div>
+                     <div class="billing-actions">
+                `;
+                
+                if (statusLower !== 'pago') {
+                    if (b.pix_code) {
+                        html += `
+                            <button class="btn-billing-action btn-copy-pix" data-pix="${b.pix_code}" title="Copiar PIX Copia e Cola">
+                                🔑
+                            </button>
+                        `;
+                    }
+                    if (b.pdf_url && b.pdf_url !== '#') {
+                        html += `
+                            <a href="${b.pdf_url}" target="_blank" class="btn-billing-action" title="Visualizar Boleto PDF">
+                                📄
+                            </a>
+                        `;
+                    }
+                } else {
+                    const formattedPayDate = b.payment_date ? b.payment_date.split('-').reverse().join('/') : formattedDate;
+                    html += `<span style="font-size: 0.8rem; color: #25d366; font-weight: 600;">Pago em ${formattedPayDate}</span>`;
+                }
+                
+                html += `
+                     </div>
+                </div>
+                `;
+            });
+            html += '</div>';
+            subviewBodyEl.innerHTML = html;
+
+            // Lógica de cópia do Pix
+            subviewBodyEl.querySelectorAll('.btn-copy-pix').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const pix = btn.dataset.pix;
+                    navigator.clipboard.writeText(pix).then(() => {
+                        alert('Código PIX Copia e Cola copiado com sucesso! Use no aplicativo do seu banco.');
+                    }).catch(err => {
+                        alert('Erro ao copiar Pix: ' + err);
+                    });
+                });
+            });
+
+        } catch (error) {
+            subviewBodyEl.innerHTML = `<div class="text-center text-danger py-4">Erro de conexão: ${error.message}</div>`;
+        }
+    }
+
+    // Busca de Chamados Técnicos no Mikweb
+    async function loadTickets() {
+        openSubview("Chamados Técnicos", '<div class="text-center py-4 text-gray">Carregando chamados...</div>');
+        try {
+            const response = await fetch(`/api/mikweb?action=tickets&customer_id=${currentCustomer.id}`);
+            const data = await response.json();
+            if (!data.success) {
+                subviewBodyEl.innerHTML = `<div class="text-center text-danger py-4">Erro ao buscar chamados: ${data.error || 'Erro desconhecido'}</div>`;
+                return;
+            }
+
+            const tickets = data.tickets || [];
+            let ticketsHtml = '';
+            
+            if (tickets.length === 0) {
+                ticketsHtml = '<div class="text-center py-4 text-gray">Nenhum chamado de suporte registrado.</div>';
+            } else {
+                ticketsHtml = '<div class="ticket-list">';
+                tickets.forEach(t => {
+                    const statusLower = (t.status || "Aberto").toLowerCase();
+                    const statusClass = statusLower === 'aberto' ? 'ticket-status-aberto' : 
+                                        (statusLower === 'respondido' ? 'ticket-status-respondido' : 'ticket-status-finalizado');
+                    const displayStatus = statusLower === 'aberto' ? 'Aberto' : (statusLower === 'respondido' ? 'Respondido' : 'Finalizado');
+                    const date = new Date(t.created_at).toLocaleDateString('pt-BR');
+                    
+                    ticketsHtml += `
+                    <div class="ticket-item">
+                        <div class="ticket-header-info">
+                            <span class="ticket-subject">${t.subject}</span>
+                            <span class="ticket-status-badge ${statusClass}">${displayStatus}</span>
+                        </div>
+                        <p class="ticket-message">${t.message}</p>
+                        <div class="ticket-date" style="margin-top: 8px;">Aberto em: ${date}</div>
+                    </div>
+                    `;
+                });
+                ticketsHtml += '</div>';
+            }
+
+            // Formulário de Abertura de Chamado
+            const formHtml = `
+                ${ticketsHtml}
+                <div class="support-new-ticket">
+                    <h4>Abrir Novo Chamado</h4>
+                    <form id="frm-new-ticket" onsubmit="return false;">
+                        <div class="form-group">
+                            <label for="ticket-subject-input">Assunto / Motivo</label>
+                            <input type="text" id="ticket-subject-input" placeholder="Ex: Lentidão no Wi-Fi, Queda de sinal, Alterar plano" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="ticket-message-input">Mensagem / Detalhes</label>
+                            <textarea id="ticket-message-input" rows="3" placeholder="Descreva sua solicitação detalhadamente para nossa equipe técnica..." required></textarea>
+                        </div>
+                        <button type="submit" id="btn-submit-ticket" class="btn btn-primary btn-block btn-glow">Enviar Chamado</button>
+                    </form>
+                </div>
+            `;
+
+            subviewBodyEl.innerHTML = formHtml;
+
+            // Submit do Chamado
+            const frmTicket = document.getElementById('frm-new-ticket');
+            const btnSubmitTicket = document.getElementById('btn-submit-ticket');
+            
+            if (frmTicket) {
+                frmTicket.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const subject = document.getElementById('ticket-subject-input').value.trim();
+                    const message = document.getElementById('ticket-message-input').value.trim();
+                    
+                    if (!subject || !message) return;
+                    
+                    btnSubmitTicket.disabled = true;
+                    btnSubmitTicket.textContent = 'Enviando Chamado...';
+                    
+                    try {
+                         const postRes = await fetch('/api/mikweb?action=create_ticket', {
+                             method: 'POST',
+                             headers: { 'Content-Type': 'application/json' },
+                             body: JSON.stringify({
+                                 customer_id: currentCustomer.id,
+                                 subject,
+                                 message
+                             })
+                         });
+                         const postData = await postRes.json();
+                         if (postData.success) {
+                             alert('Chamado aberto com sucesso! Nossa equipe técnica dará retorno em breve.');
+                             loadTickets(); // Atualiza a listagem
+                         } else {
+                             alert('Erro ao abrir chamado: ' + (postData.error || 'Erro desconhecido'));
+                             btnSubmitTicket.disabled = false;
+                             btnSubmitTicket.textContent = 'Enviar Chamado';
+                         }
+                    } catch(err) {
+                         alert('Erro de conexão ao abrir chamado: ' + err.message);
+                         btnSubmitTicket.disabled = false;
+                         btnSubmitTicket.textContent = 'Enviar Chamado';
+                    }
+                });
+            }
+
+        } catch (error) {
+            subviewBodyEl.innerHTML = `<div class="text-center text-danger py-4">Erro de rede: ${error.message}</div>`;
+        }
+    }
+
+    btnLogin.addEventListener('click', async () => {
         const cpf = inputCpf.value;
         const pass = document.getElementById('portal-password').value;
         
@@ -449,49 +670,83 @@ document.addEventListener('DOMContentLoaded', () => {
         btnLogin.disabled = true;
         btnLogin.textContent = 'Verificando Credenciais...';
         
-        setTimeout(() => {
-            // Success simulation
+        try {
+            const cleanCpf = cpf.replace(/\D/g, '');
+            const response = await fetch(`/api/mikweb?action=login&cpf=${cleanCpf}&password=${encodeURIComponent(pass)}`);
+            const data = await response.json();
+            
+            if (!response.ok || !data.success) {
+                alert(data.error || 'Falha na autenticação. Verifique os dados.');
+                btnLogin.disabled = false;
+                btnLogin.textContent = 'Entrar na Central';
+                return;
+            }
+            
+            // Sucesso no login
+            currentCustomer = data.customer;
+            
+            // Popula os elementos do painel dinamicamente
+            dashClientName.textContent = currentCustomer.full_name;
+            
+            const planNameEl = document.getElementById('dash-plan-name');
+            const planStatusEl = document.getElementById('dash-plan-status');
+            const dueDayEl = document.getElementById('dash-due-day');
+            
+            if (planNameEl) planNameEl.textContent = currentCustomer.login ? currentCustomer.login.toUpperCase() : "PLANO ULTRA";
+            if (planStatusEl) planStatusEl.textContent = `Status: ${currentCustomer.status || "Ativo"}`;
+            if (dueDayEl) dueDayEl.textContent = `Dia ${currentCustomer.due_day || 10}`;
+            
+            // Transição visual para o dashboard
             loginView.classList.add('d-none');
             dashboardView.classList.remove('d-none');
-            dashClientName.textContent = 'Joseph Nascimento';
+            closeSubview(); // Garante que começa na tela inicial do dashboard
+
+        } catch (err) {
+            console.error(err);
+            alert('Ocorreu um erro na conexão com a Central. Verifique sua conexão.');
+        } finally {
             btnLogin.disabled = false;
             btnLogin.textContent = 'Entrar na Central';
-        }, 1200);
+        }
     });
 
     btnLogout.addEventListener('click', () => {
+        currentCustomer = null;
         dashboardView.classList.add('d-none');
         loginView.classList.remove('d-none');
         inputCpf.value = '';
         document.getElementById('portal-password').value = '';
+        closeSubview();
     });
 
-    // Bind simulated actions inside Dashboard
+    // Vincula ações dos botões aos novos endpoints dinâmicos
     document.getElementById('btn-dash-2via').addEventListener('click', () => {
-        alert('Carregando 2ª Via da Fatura...\nCódigo de Barras PIX Gerado com sucesso:\n00020101021226870014br.gov.bcb.pix2565pix.ultrafibra.com.br/faturas/25684391');
+        loadBillings("Segunda Via de Fatura");
     });
 
     document.getElementById('btn-dash-pagamento').addEventListener('click', () => {
-        alert('Sem faturas em aberto! Seu plano de 600 MEGA está quitado até o próximo vencimento.');
+        loadBillings("Faturas Pendentes");
     });
 
     document.getElementById('btn-dash-historico').addEventListener('click', () => {
-        alert('Histórico Financeiro:\n- Fatura Junho/2026: R$ 99,90 [PAGO]\n- Fatura Maio/2026: R$ 99,90 [PAGO]\n- Fatura Abril/2026: R$ 99,90 [PAGO]');
+        loadBillings("Histórico Financeiro");
     });
 
     document.getElementById('btn-dash-suporte').addEventListener('click', () => {
-        alert('Chamados Técnicos:\nNenhum incidente ou chamado técnico registrado. Sua conexão de fibra óptica está com sinal estável de +18dBm.');
+        loadTickets();
     });
 
     document.getElementById('btn-dash-cadastro').addEventListener('click', () => {
-        alert('Redirecionando para atualização cadastral...\n(Nome, Endereço de Instalação e E-mail confirmados).');
+        const infoText = `Seus dados cadastrais atuais:\n\n` +
+                         `- Nome: ${currentCustomer.full_name}\n` +
+                         `- CPF/CNPJ: ${currentCustomer.cpf_cnpj}\n` +
+                         `- Login Conexão: ${currentCustomer.login || 'Não cadastrado'}\n\n` +
+                         `Para solicitar alteração de endereço ou e-mail, entre em contato via WhatsApp com nossa equipe de atendimento comercial.`;
+        alert(infoText);
     });
 
     document.getElementById('btn-dash-senha').addEventListener('click', () => {
-        const nova = prompt('Informe sua nova senha da Central:');
-        if (nova) {
-            alert('Senha alterada com sucesso!');
-        }
+        alert('Para alterar sua senha da Central do Assinante ou de conexão PPPoE, por favor, fale com nosso suporte técnico no canal de atendimento local.');
     });
 
     /* ==========================================================================
