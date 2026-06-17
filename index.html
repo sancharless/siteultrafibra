@@ -1217,53 +1217,66 @@
                 <p>Preencha os dados abaixo e garanta sua internet ultra veloz em poucos minutos!</p>
             </div>
             <form id="frm-register" class="modal-form">
+                <!-- CPF Verification Field (Shown First) -->
                 <div class="form-group">
-                    <label for="reg-name">Nome Completo</label>
-                    <input type="text" id="reg-name" placeholder="Ex: Joseph Nascimento" required>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="reg-phone">WhatsApp / Telefone</label>
-                        <input type="tel" id="reg-phone" placeholder="(98) 99999-9999" required>
+                    <label for="reg-cpf">Informe seu CPF (Para validação cadastral automática)</label>
+                    <div class="cpf-input-wrapper">
+                        <input type="text" id="reg-cpf" placeholder="000.000.000-00" maxlength="14" required>
+                        <div class="cpf-spinner d-none" id="cpf-search-spinner"></div>
                     </div>
-                    <div class="form-group">
-                        <label for="reg-cep">CEP</label>
-                        <input type="text" id="reg-cep" placeholder="65000-000" maxlength="9" required>
-                    </div>
-                </div>
-                
-                <!-- Address auto-completed sub-info -->
-                <div id="reg-address-info" class="address-preview d-none">
-                    📍 <span id="reg-lbl-rua">Rua Exemplo</span>, 
-                    <span id="reg-lbl-bairro">Bairro</span> - 
-                    <span id="reg-lbl-cidade">Cidade</span>
+                    <span id="cpf-validation-msg" class="validation-msg"></span>
                 </div>
 
-                <div class="form-row">
+                <!-- Hidden Fields (Revealed after valid CPF query) -->
+                <div id="modal-hidden-fields" class="d-none">
                     <div class="form-group">
-                        <label for="reg-number">Número</label>
-                        <input type="text" id="reg-number" placeholder="Ex: 123" required>
+                        <label for="reg-name">Nome Completo (Confirmado na Receita Federal)</label>
+                        <input type="text" id="reg-name" readonly required style="background: rgba(255, 255, 255, 0.02); border-color: rgba(37, 211, 102, 0.4); color: #25D366; font-weight: 700; cursor: not-allowed;">
                     </div>
-                    <div class="form-group">
-                        <label for="reg-plan">Selecione seu Plano</label>
-                        <select id="reg-plan" required>
-                            <option value="" disabled selected>Escolha um plano...</option>
-                            <optgroup label="Planos Residenciais">
-                                <option value="Plano 300 Mega">Plano 300 Mega - R$ 89,90/mês</option>
-                                <option value="Plano 600 Mega">Plano 600 Mega - R$ 99,90/mês (Recomendado)</option>
-                                <option value="Plano 1 Giga">Plano 1 Giga - R$ 149,90/mês</option>
-                                <option value="Plano Ultra TV">Plano Ultra TV - R$ 189,90/mês</option>
-                            </optgroup>
-                            <optgroup label="Planos Corporativos">
-                                <option value="Ultra Link 300M">Ultra Link 300M - R$ 149,90/mês</option>
-                                <option value="Ultra Link 600M">Ultra Link 600M - R$ 199,90/mês</option>
-                                <option value="Ultra Link 1 Giga">Ultra Link 1 Giga - R$ 299,90/mês</option>
-                                <option value="Ultra Link + TV Corp">Ultra Link + TV Corp - R$ 349,90/mês</option>
-                            </optgroup>
-                        </select>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="reg-phone">WhatsApp / Telefone</label>
+                            <input type="tel" id="reg-phone" placeholder="(98) 99999-9999" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="reg-cep">CEP</label>
+                            <input type="text" id="reg-cep" placeholder="65000-000" maxlength="9" required>
+                        </div>
                     </div>
+                    
+                    <!-- Address auto-completed sub-info -->
+                    <div id="reg-address-info" class="address-preview d-none">
+                        📍 <span id="reg-lbl-rua">Rua Exemplo</span>, 
+                        <span id="reg-lbl-bairro">Bairro</span> - 
+                        <span id="reg-lbl-cidade">Cidade</span>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="reg-number">Número</label>
+                            <input type="text" id="reg-number" placeholder="Ex: 123" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="reg-plan">Selecione seu Plano</label>
+                            <select id="reg-plan" required>
+                                <option value="" disabled selected>Escolha um plano...</option>
+                                <optgroup label="Planos Residenciais">
+                                    <option value="Plano 300 Mega">Plano 300 Mega - R$ 89,90/mês</option>
+                                    <option value="Plano 600 Mega">Plano 600 Mega - R$ 99,90/mês (Recomendado)</option>
+                                    <option value="Plano 1 Giga">Plano 1 Giga - R$ 149,90/mês</option>
+                                    <option value="Plano Ultra TV">Plano Ultra TV - R$ 189,90/mês</option>
+                                </optgroup>
+                                <optgroup label="Planos Corporativos">
+                                    <option value="Ultra Link 300M">Ultra Link 300M - R$ 149,90/mês</option>
+                                    <option value="Ultra Link 600M">Ultra Link 600M - R$ 199,90/mês</option>
+                                    <option value="Ultra Link 1 Giga">Ultra Link 1 Giga - R$ 299,90/mês</option>
+                                    <option value="Ultra Link + TV Corp">Ultra Link + TV Corp - R$ 349,90/mês</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" id="btn-submit-register" class="btn btn-primary btn-block btn-glow">Enviar e Finalizar Cadastro</button>
                 </div>
-                <button type="submit" id="btn-submit-register" class="btn btn-primary btn-block btn-glow">Enviar e Finalizar Cadastro</button>
             </form>
 
             <!-- Success screen inside the modal -->

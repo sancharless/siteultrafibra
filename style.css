@@ -2865,4 +2865,55 @@ h2.section-title {
     }
 }
 
+/* CPF Query and Validation Styling */
+.cpf-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.cpf-spinner {
+    position: absolute;
+    right: 16px;
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255, 106, 0, 0.2);
+    border-top-color: var(--primary-orange);
+    border-radius: 50%;
+    animation: spinCPF 0.8s linear infinite;
+}
+
+@keyframes spinCPF {
+    to { transform: rotate(360deg); }
+}
+
+.validation-msg {
+    font-size: 0.8rem;
+    margin-top: 6px;
+    display: block;
+    font-weight: 500;
+}
+
+.validation-msg.success {
+    color: #25D366;
+}
+
+.validation-msg.error {
+    color: #ff4d4d;
+}
+
+.validation-msg.loading {
+    color: var(--primary-orange);
+}
+
+.fade-in-form-group {
+    opacity: 0;
+    transform: translateY(12px);
+    animation: fadeInField 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeInField {
+    to { opacity: 1; transform: translateY(0); }
+}
+
 
