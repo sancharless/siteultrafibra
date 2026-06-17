@@ -719,6 +719,135 @@ document.addEventListener('DOMContentLoaded', () => {
         closeSubview();
     });
 
+    // Alternância entre Telas (Login vs Primeiro Acesso)
+    const registerView = document.getElementById('portal-register-view');
+    const linkPrimeiroAcesso = document.getElementById('link-primeiro-acesso');
+    const linkLoginAcesso = document.getElementById('link-login-acesso');
+
+    if (linkPrimeiroAcesso) {
+        linkPrimeiroAcesso.addEventListener('click', (e) => {
+            e.preventDefault();
+            loginView.classList.add('d-none');
+            registerView.classList.remove('d-none');
+            // Limpa os campos
+            document.getElementById('register-cpf').value = '';
+            document.getElementById('register-phone').value = '';
+            document.getElementById('register-password').value = '';
+            document.getElementById('register-password-confirm').value = '';
+        });
+    }
+
+    if (linkLoginAcesso) {
+        linkLoginAcesso.addEventListener('click', (e) => {
+            e.preventDefault();
+            registerView.classList.add('d-none');
+            loginView.classList.remove('d-none');
+        });
+    }
+
+    // Mascaramento dos Inputs do Primeiro Acesso
+    const inputRegCpf = document.getElementById('register-cpf');
+    if (inputRegCpf) {
+        inputRegCpf.addEventListener('input', (e) => {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length <= 11) { // CPF format
+                value = value.replace(/(\d{3})(\d)/, '$1.$2')
+                             .replace(/(\d{3})(\d)/, '$1.$2')
+                             .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+            } else { // CNPJ format
+                value = value.substring(0, 14)
+                             .replace(/^(\d{2})(\d)/, '$1.$2')
+                             .replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3')
+                             .replace(/\.(\d{3})(\d)/, '.$1/$2')
+                             .replace(/(\d{4})(\d)/, '$1-$2');
+            }
+            e.target.value = value;
+        });
+    }
+
+    const inputRegPhone = document.getElementById('register-phone');
+    if (inputRegPhone) {
+        inputRegPhone.addEventListener('input', (e) => {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 10) {
+                value = value.replace(/^(\d{2})(\d{5})(\d{4})$/, '($1) $2-$3');
+            } else if (value.length > 5) {
+                value = value.replace(/^(\d{2})(\d{4})(\d{0,4})$/, '($1) $2-$3');
+            } else if (value.length > 2) {
+                value = value.replace(/^(\d{2})(\d{0,4})$/, '($1) $2');
+            } else if (value.length > 0) {
+                value = value.replace(/^(\d{0,2})$/, '($1');
+            }
+            e.target.value = value;
+        });
+    }
+
+    // Submissão do Primeiro Acesso (Cadastro de Senha)
+    const btnRegisterPortal = document.getElementById('btn-register-portal');
+    if (btnRegisterPortal) {
+        btnRegisterPortal.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const cpf = inputRegCpf.value;
+            const phone = inputRegPhone.value;
+            const password = document.getElementById('register-password').value;
+            const confirmPassword = document.getElementById('register-password-confirm').value;
+
+            if (!cpf || !phone || !password || !confirmPassword) {
+                alert('Por favor, preencha todos os campos.');
+                return;
+            }
+
+            if (password.length < 6) {
+                alert('A senha deve ter no mínimo 6 caracteres.');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                alert('As senhas digitadas não coincidem.');
+                return;
+            }
+
+            btnRegisterPortal.disabled = true;
+            btnRegisterPortal.textContent = 'Enviando...';
+
+            try {
+                const cleanCpf = cpf.replace(/\D/g, '');
+                const cleanPhone = phone.replace(/\D/g, '');
+
+                const response = await fetch('/api/mikweb?action=register_password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        cpf: cleanCpf,
+                        phone: cleanPhone,
+                        password: password
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok || !data.success) {
+                    alert(data.error || 'Falha ao cadastrar senha. Verifique seus dados.');
+                    return;
+                }
+
+                alert(data.message || 'Senha cadastrada com sucesso!');
+                // Retorna para a tela de login
+                registerView.classList.add('d-none');
+                loginView.classList.remove('d-none');
+                // Preenche o campo de CPF no login para conveniência
+                inputCpf.value = cpf;
+
+            } catch (err) {
+                console.error(err);
+                alert('Erro de conexão ao realizar cadastro de senha. Tente novamente.');
+            } finally {
+                btnRegisterPortal.disabled = false;
+                btnRegisterPortal.textContent = 'Cadastrar Senha';
+            }
+        });
+    }
+
     // Vincula ações dos botões aos novos endpoints dinâmicos
     document.getElementById('btn-dash-2via').addEventListener('click', () => {
         loadBillings("Segunda Via de Fatura");

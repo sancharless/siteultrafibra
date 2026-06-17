@@ -708,7 +708,37 @@
                             <button class="btn btn-primary btn-glow btn-block" type="submit" id="btn-login-portal">Entrar na Central</button>
                         </form>
                         <div class="portal-footer">
-                            <p>Primeiro acesso? <a href="#">Cadastre-se aqui</a></p>
+                            <p>Primeiro acesso? <a href="#" id="link-primeiro-acesso">Cadastre-se aqui</a></p>
+                        </div>
+                    </div>
+
+                    <!-- Primeiro Acesso Form (Hidden initially) -->
+                    <div class="portal-register-view d-none" id="portal-register-view">
+                        <span class="badge badge-orange">PRIMEIRO ACESSO</span>
+                        <h2>Cadastre Sua Senha</h2>
+                        <p>Informe seus dados cadastrais para criar sua senha de acesso à Central.</p>
+                        
+                        <form id="frm-portal-register" onsubmit="return false;">
+                            <div class="form-group">
+                                <label for="register-cpf">CPF/CNPJ do Titular</label>
+                                <input type="text" id="register-cpf" placeholder="000.000.000-00" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="register-phone">Telefone de Cadastro (WhatsApp)</label>
+                                <input type="text" id="register-phone" placeholder="Ex: (98) 99999-9999" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="register-password">Crie Sua Senha</label>
+                                <input type="password" id="register-password" placeholder="Mínimo 6 caracteres" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="register-password-confirm">Confirme Sua Senha</label>
+                                <input type="password" id="register-password-confirm" placeholder="Confirme a nova senha" required>
+                            </div>
+                            <button class="btn btn-primary btn-glow btn-block" type="submit" id="btn-register-portal">Cadastrar Senha</button>
+                        </form>
+                        <div class="portal-footer">
+                            <p>Já possui senha? <a href="#" id="link-login-acesso">Entrar na Central</a></p>
                         </div>
                     </div>
 

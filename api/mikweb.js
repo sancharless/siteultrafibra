@@ -14,11 +14,13 @@ module.exports = async (req, res) => {
 
     const query = url.parse(req.url, true).query;
     const action = query.action;
-    const MIKWEB_TOKEN = process.env.MIKWEB_API_TOKEN || process.env.MIKWEB_TOKEN || "";
+    const MIKWEB_TOKEN = (query.mock === 'true') ? "" : (process.env.MIKWEB_API_TOKEN || process.env.MIKWEB_TOKEN || "");
 
     // MODO DEMONSTRAÇÃO (Se não houver token cadastrado)
     if (!MIKWEB_TOKEN) {
-        console.warn("AVISO: Variável MIKWEB_API_TOKEN não está definida. Executando em Modo de Demonstração.");
+        if (query.mock !== 'true') {
+            console.warn("AVISO: Variável MIKWEB_API_TOKEN não está definida. Executando em Modo de Demonstração.");
+        }
         return handleMockMode(req, res, action, query);
     }
 
@@ -181,6 +183,73 @@ module.exports = async (req, res) => {
                 ticket: data
             });
 
+        } else if (action === 'register_password') {
+            let body = {};
+            if (req.method === 'POST') {
+                body = await parseRequestBody(req);
+            }
+
+            const rawCpf = (body.cpf || query.cpf || "").replace(/\D/g, '');
+            const inputPhone = (body.phone || query.phone || "").replace(/\D/g, '');
+            const newPassword = body.password || query.password || "";
+
+            if (!rawCpf || !inputPhone || !newPassword) {
+                return respondWithError(res, 400, "CPF/CNPJ, Telefone de cadastro e Nova Senha são obrigatórios.");
+            }
+
+            // Busca o cliente pelo CPF/CNPJ
+            const response = await fetch(`https://api.mikweb.com.br/v1/admin/customers?search=${rawCpf}`, {
+                method: 'GET',
+                headers
+            });
+
+            if (!response.ok) {
+                return respondWithError(res, response.status, "Erro ao conectar com a API do Mikweb.");
+            }
+
+            const data = await response.json();
+            const customers = data.customers || [];
+
+            if (customers.length === 0) {
+                return respondWithError(res, 404, "Nenhum cliente encontrado com este CPF/CNPJ.");
+            }
+
+            const customer = customers[0];
+
+            // Validação de Identidade: Compara o telefone digitado com o telefone cadastrado no Mikweb
+            const cleanDbPhone = (customer.phone || '').replace(/\D/g, '');
+            const cleanDbCellphone = (customer.cellphone || '').replace(/\D/g, '');
+
+            let phoneMatches = false;
+            if (inputPhone.length >= 4) {
+                const last4Input = inputPhone.substring(inputPhone.length - 4);
+                if (cleanDbPhone.endsWith(last4Input) || cleanDbCellphone.endsWith(last4Input)) {
+                    phoneMatches = true;
+                }
+            }
+
+            if (!phoneMatches) {
+                return respondWithError(res, 400, "O telefone informado não coincide com o telefone de cadastro em nosso sistema.");
+            }
+
+            // Atualiza a senha no Mikweb usando PUT /customers/<id>
+            const putResponse = await fetch(`https://api.mikweb.com.br/v1/admin/customers/${customer.id}`, {
+                method: 'PUT',
+                headers,
+                body: JSON.stringify({
+                    password: newPassword
+                })
+            });
+
+            if (!putResponse.ok) {
+                return respondWithError(res, putResponse.status, "Falha ao atualizar a senha no Mikweb.");
+            }
+
+            return respondWithJson(res, 200, {
+                success: true,
+                message: "Senha cadastrada com sucesso! Agora você já pode entrar na Central."
+            });
+
         } else {
             return respondWithError(res, 400, "Ação não suportada.");
         }
@@ -206,6 +275,16 @@ function respondWithJson(res, status, data) {
 }
 
 function parseRequestBody(req) {
+    if (req.body) {
+        if (typeof req.body === 'object') {
+            return Promise.resolve(req.body);
+        }
+        try {
+            return Promise.resolve(JSON.parse(req.body));
+        } catch (e) {
+            return Promise.resolve({});
+        }
+    }
     return new Promise((resolve, reject) => {
         let body = '';
         req.on('data', chunk => {
@@ -222,7 +301,7 @@ function parseRequestBody(req) {
 }
 
 // --- MOCK MODE HANDLER ---
-function handleMockMode(req, res, action, query) {
+async function handleMockMode(req, res, action, query) {
     if (action === 'login') {
         const rawCpf = (query.cpf || "").replace(/\D/g, '');
         const password = query.password || "";
@@ -311,6 +390,29 @@ function handleMockMode(req, res, action, query) {
                 status: "Aberto",
                 created_at: new Date().toISOString()
             }
+        });
+
+    } else if (action === 'register_password') {
+        let body = {};
+        if (req.method === 'POST') {
+            body = await parseRequestBody(req);
+        }
+        
+        const rawCpf = (body.cpf || query.cpf || "").replace(/\D/g, '');
+        const inputPhone = (body.phone || query.phone || "").replace(/\D/g, '');
+        const newPassword = body.password || query.password || "";
+
+        if (!rawCpf || !inputPhone || !newPassword) {
+            return respondWithError(res, 400, "[MOCK] CPF, Telefone e Nova Senha são obrigatórios.");
+        }
+
+        if (rawCpf.startsWith('000')) {
+            return respondWithError(res, 404, "[MOCK] CPF não localizado na nossa base de dados.");
+        }
+
+        return respondWithJson(res, 200, {
+            success: true,
+            message: "[MOCK] Senha cadastrada com sucesso! Agora você já pode entrar na Central."
         });
     }
 

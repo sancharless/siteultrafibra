@@ -1821,6 +1821,10 @@ input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focu
     }
 }
 
+.portal-register-view {
+    animation: fadeIn 0.3s ease;
+}
+
 /* ==========================================================================
    TESTE DE VELOCIDADE
    ========================================================================== */
