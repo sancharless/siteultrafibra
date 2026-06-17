@@ -123,17 +123,32 @@ module.exports = async (req, res) => {
                 timestamp: new Date().toISOString()
             });
 
+            // Envia mensagem via API do Z-API se configurado
+            await sendZApiMessage(phone, messageText);
+
             // Opcional: Reseta o chatbot para o estado inicial para evitar respostas automáticas conflitantes em seguida
             state.chats[phone].step = 'idle';
 
             return respondWithJson(res, 200, { success: true });
 
         } else if (action === 'webhook') {
-            // Este endpoint simula o recebimento de uma mensagem do cliente no WhatsApp
             const body = await parseRequestBody(req);
+
+            // Evita loops infinitos ignorando mensagens enviadas pela própria instância comercial
+            if (body.fromMe === true) {
+                return respondWithJson(res, 200, { success: true, message: "Ignored fromMe message" });
+            }
+
+            // Suporta Z-API payload OU simulador custom payload
             const phone = body.phone || "";
-            const name = body.name || "Cliente";
-            const messageText = (body.message || "").trim();
+            const name = body.senderName || body.chatName || body.name || "Cliente";
+            
+            let messageText = "";
+            if (body.text && typeof body.text === 'object') {
+                messageText = (body.text.message || "").trim();
+            } else {
+                messageText = (body.message || "").trim();
+            }
 
             if (!phone || !messageText) {
                 return respondWithError(res, 400, "Telefone e mensagem são obrigatórios no webhook.");
@@ -230,6 +245,9 @@ module.exports = async (req, res) => {
                 text: replyText,
                 timestamp: new Date().toISOString()
             });
+
+            // Envia a resposta automática para o cliente pelo Z-API se configurado
+            await sendZApiMessage(phone, replyText);
 
             return respondWithJson(res, 200, {
                 success: true,
@@ -382,4 +400,32 @@ function parseRequestBody(req) {
             }
         });
     });
+}
+
+// --- Z-API SEND HELPER ---
+async function sendZApiMessage(phone, message) {
+    const instanceId = process.env.ZAPI_INSTANCE_ID;
+    const token = process.env.ZAPI_TOKEN;
+    if (!instanceId || !token) return;
+
+    // Limpa o telefone para o formato exigido pelo Z-API (sem '+' e apenas dígitos)
+    const cleanPhone = phone.replace(/\D/g, '');
+
+    try {
+        const response = await fetch(`https://api.z-api.io/instances/${instanceId}/token/${token}/send-text`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                phone: cleanPhone,
+                message: message
+            })
+        });
+        if (!response.ok) {
+            console.error("Falha ao enviar mensagem via Z-API:", response.status, await response.text());
+        }
+    } catch (e) {
+        console.error("Erro de conexão ao enviar mensagem via Z-API:", e);
+    }
 }
